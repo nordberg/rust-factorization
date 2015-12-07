@@ -32,17 +32,17 @@ fn main() {
 
 fn build_factor_string(n : u64) -> String {
 
-    let factor_string: String = "".to_owned();
+    let mut factor_string: String = String::new();
     let mut comp = n;
-    let mut factors: HashMap<u64, u32> = HashMap::new();
+    let mut exp_map: HashMap<u64, u32> = HashMap::new();
 
     loop {
         let f = factor(comp);
 
-        if !factors.contains_key(&f) {
-            factors.insert(f, 1);
+        if !exp_map.contains_key(&f) {
+            exp_map.insert(f, 1);
         } else {
-            let exp = factors.entry(f).or_insert(0);
+            let exp = exp_map.entry(f).or_insert(0);
             *exp += 1;
         }
         if f == comp {
@@ -52,8 +52,20 @@ fn build_factor_string(n : u64) -> String {
         comp = comp / f;
     }
 
-    for (base, exp) in factors {
-        print!("{}^{} ", base, exp);
+    let mut factors = Vec::new();
+
+    for (base, _) in &exp_map {
+        factors.push(base);
+    }
+
+    factors.sort();
+
+    for base in factors {
+        if exp_map.get(&base).is_some() {
+            let exponent = exp_map.get(&base).unwrap();
+            let s = format!("{}^{} ", &base, exponent);
+            factor_string.push_str(&s);
+        }
     }
 
     factor_string.to_string()
@@ -75,6 +87,7 @@ fn factor(n : u64) -> u64 {
     ret
 }
 
+/* left-to-right binary modular exponentiation */
 fn mod_exp(base: u64, exp: u64, m: u64) -> u64 {
     let mut b = base;
     let mut e = exp;
@@ -103,11 +116,11 @@ fn is_prime(p : u64) -> bool {
         return true;
     }
 
+    /* p is an even number */
     if p.trailing_zeros() > 0 {
         return false;
     }
 
-    let mut pr = p;
     let mut r: i32 = 0;
     let mut d: u64 = 1;
 
@@ -118,6 +131,7 @@ fn is_prime(p : u64) -> bool {
 
     d = p / d;
 
+    /* 5 iterations to reduce risk of falsely classifying composite number as prime */
     for _ in 0..4 {
         let a = rand::thread_rng().gen_range(2, p - 2);
         let mut x = mod_exp(a, d, p);
