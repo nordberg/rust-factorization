@@ -2,3 +2,6 @@
 name = "factorization"
 version = "0.1.0"
 authors = ["Marcus Nordberg <nordberg@github.com>"]
+
+[dependencies]
+rand = "0.3.*"
