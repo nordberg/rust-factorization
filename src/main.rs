@@ -1,5 +1,8 @@
+extern crate rand;
+
 use std::io;
 use std::collections::HashMap;
+use rand::Rng;
 
 fn main() {
     let mut vec = Vec::new();
@@ -72,18 +75,73 @@ fn factor(n : u64) -> u64 {
     ret
 }
 
-fn is_prime(p : u64) -> bool {
-    let mut ret = p;
+fn mod_exp(base: u64, exp: u64, m: u64) -> u64 {
+    let mut b = base;
+    let mut e = exp;
 
-    for i in 2..p {
-        if p % i == 0 {
-            ret = i;
-            break;
+    if m == 1 {
+        return 0;
+    }
+
+    let mut r = 1;
+
+    b = b % m;
+
+    while e > 0 {
+        if e % 2 == 1 {
+            r = (r * b) % m;
         }
+
+        e = e >> 1;
     }
-    if ret == p {
-        true
-    } else {
-        false
+
+    m
+}
+
+fn is_prime(p : u64) -> bool {
+    if p <= 3 {
+        return true;
     }
+
+    if p.trailing_zeros() > 0 {
+        return false;
+    }
+
+    let mut pr = p;
+    let mut r: i32 = 0;
+    let mut d: u64 = 1;
+
+    while d * 2 <= p {
+        d *= 2;
+        r += 1;
+    }
+
+    d = p / d;
+
+    for _ in 0..4 {
+        let a = rand::thread_rng().gen_range(2, p - 2);
+        let mut x = mod_exp(a, d, p);
+        let mut cont: bool = false;
+
+        if x == 1 || x == p - 1 {
+            continue;
+        }
+
+        for _ in 0..r-1 {
+            x = mod_exp(x, 2, p);
+            if x == 1 {
+                return false;
+            } else if x == p - 1 {
+                cont = true;
+                break;
+            }
+            return false;
+        }
+        if cont {
+            continue;
+        }
+        return true;
+    }
+
+    false
 }
