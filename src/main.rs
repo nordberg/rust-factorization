@@ -179,8 +179,8 @@ fn primes_under_500() {
 
 #[test]
 fn squares() {
-    assert_eq!(build_factor_string(25), "5^2");
     assert_eq!(build_factor_string(9), "3^2");
+    assert_eq!(build_factor_string(25), "5^2");
     assert_eq!(build_factor_string(64), "8^2");
 }
 
