@@ -1,36 +1,9 @@
 extern crate rand;
 
-use std::io;
 use std::collections::HashMap;
 use rand::Rng;
 
-fn main() {
-    let mut vec = Vec::new();
-
-    loop {
-        let mut composite = String::new();
-        io::stdin().read_line(&mut composite)
-            .ok()
-            .expect("Failed to read input");
-
-        let number: u64 = match composite.trim().parse() {
-            Ok(num) => num,
-            Err(_) => panic!("Failed to parse"),
-        };
-
-        if number == 0 {
-            break;
-        }
-
-        vec.push(number);
-    }
-
-    for x in &vec {
-        println!("{}", build_factor_string(*x));
-    }
-}
-
-pub fn build_factor_string(n : u64) -> String {
+pub fn factorize(n : u64) -> String {
 
     let mut factor_string: String = String::new();
     let mut comp = n;
@@ -112,6 +85,7 @@ fn mod_exp(base: u64, exp: u64, m: u64) -> u64 {
     m
 }
 
+/* Miller-Rabin's Primality Test */
 pub fn is_prime(p : u64) -> bool {
     if p <= 3 {
         return true;
@@ -157,7 +131,6 @@ pub fn is_prime(p : u64) -> bool {
         }
         return true;
     }
-
     false
 }
 
